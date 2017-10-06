@@ -140,19 +140,17 @@ int main(int argc, char** argv)
     }
     RGB pixelsFirstPic[size];
 
-    for(int i = 0; i < size; i++)//cria um vetor com todos os pixels da pic[0], esses pixels iram compor a pic[2]
+    for(int i = 0; i < size; i++){//cria um vetor com todos os pixels da pic[0], esses pixels iram compor a pic[2]
         pixelsFirstPic[i] = pic[0].img[i];
     }
     int dist;
     int aux;
-    for(int n = 0; n < 1000; n++){//itera por cada pixel da imagem, para que seja atribuido um pixel por vez em pic[2]. O correto eh n < size, mas a execucao demora muito tempo, entao para testes fica melhor n < 1000
+    for(int n = 0; n < size; n++){//itera por cada pixel da imagem, para que seja atribuido um pixel por vez em pic[2]. O correto eh n < size, mas a execucao demora muito tempo, entao para testes fica melhor n < 1000
         dist = 10000; //valor inicial da distancia, deve ser qualquer valor grande que garanta a atribuicao de valor no primeira iteracao do for abaixo
         for(int i = 0; i < size; i++){ //encontra a cor dentro de pixelsFirstPic mais proxima de pic[1].img[n]
             if(dist > distanciaPixels(&pixelsFirstPic[i], &pic[1].img[n])){
                 dist = distanciaPixels(&pixelsFirstPic[i], &pic[1].img[n]);
-                aux = i;You must add an explicit argument:
-
-
+                aux = i;
             }
         }
         pic[2].img[n] = pixelsFirstPic[aux]; //atribui cor mais proxima a pic[2]
@@ -162,9 +160,6 @@ int main(int argc, char** argv)
             pixelsFirstPic[j] = pixelsFirstPic[j+1];
         }*/
         // eh importante remover a cor de pixelFirstPic, para que o mesmo pixel de pic[0] nao seja atribuido mais de uma vez em pic[2]
-
-
-        //acredito que, da forma que esta, o algoritmo ja cria uma terceira imagem muito parecida com a segunda imagem, o que falta eh fazer com que cada pixel da imagem 1 soh seja utilizado uma vez. Fora isso, talvez soh questao de eficiencia do algoritmo.
     }
 
 //#else
@@ -177,6 +172,7 @@ int main(int argc, char** argv)
 
 	// Entra no loop de eventos, não retorna
     glutMainLoop();
+    //acredito que, da forma que esta, o algoritmo ja cria uma terceira imagem muito parecida com a segunda imagem, o que falta eh fazer com que cada pixel da imagem 1 soh seja utilizado uma vez. Fora isso, talvez soh questao de eficiencia do algoritmo.
 }
 /*
 void createPic2(Img* img1, Img* img2, Img* img3){
