@@ -131,35 +131,40 @@ int main(int argc, char** argv)
 	load(argv[3], &pic[2]);
     //createPic2(&pic[0], &pic[1], &pic[2]);
     int size = pic[1].width*pic[1].height;
-
-    for(int i = 0; i < size; i++){
+    int length;
+    printf("size: %i\n", size);
+    for(int i = 0; i < size; i++){//cria pic[2] (imagem da resposta) para ser uma imagem toda vermelha, para testarmos
        pic[2].img[i].r = 'f';
        pic[2].img[i].b = '0';
        pic[2].img[i].g = '0';
     }
-
     RGB pixelsFirstPic[size];
 
-    for(int i = 0; i < size; i++){
+    for(int i = 0; i < size; i++)//cria um vetor com todos os pixels da pic[0], esses pixels iram compor a pic[2]
         pixelsFirstPic[i] = pic[0].img[i];
     }
-
-    int dist = 10000;
+    int dist;
     int aux;
-    for(int n = 0; n < 1000; n++){
-        dist = 10000;
-        for(int i = 0; i < size; i++){
+    for(int n = 0; n < 1000; n++){//itera por cada pixel da imagem, para que seja atribuido um pixel por vez em pic[2]. O correto eh n < size, mas a execucao demora muito tempo, entao para testes fica melhor n < 1000
+        dist = 10000; //valor inicial da distancia, deve ser qualquer valor grande que garanta a atribuicao de valor no primeira iteracao do for abaixo
+        for(int i = 0; i < size; i++){ //encontra a cor dentro de pixelsFirstPic mais proxima de pic[1].img[n]
             if(dist > distanciaPixels(&pixelsFirstPic[i], &pic[1].img[n])){
                 dist = distanciaPixels(&pixelsFirstPic[i], &pic[1].img[n]);
-                aux = i;
+                aux = i;You must add an explicit argument:
+
+
             }
         }
-        pic[2].img[n] = pixelsFirstPic[aux];
-        int length = sizeof(pixelsFirstPic) - 3;
+        pic[2].img[n] = pixelsFirstPic[aux]; //atribui cor mais proxima a pic[2]
 
-        for(int j = aux; j < length; j++){
-            pixelsFirstPic[j] = pixelsFirstPic[j + 1];
-        }
+        /*length = sizeof(pixelsFirstPic);
+        for(int j = aux; j < length; j++){ remove a cor de pixelsFirstPic, nao esta funcionando, acredito que o sizeof nao seja o ideal para conseguir tamanho de vetor
+            pixelsFirstPic[j] = pixelsFirstPic[j+1];
+        }*/
+        // eh importante remover a cor de pixelFirstPic, para que o mesmo pixel de pic[0] nao seja atribuido mais de uma vez em pic[2]
+
+
+        //acredito que, da forma que esta, o algoritmo ja cria uma terceira imagem muito parecida com a segunda imagem, o que falta eh fazer com que cada pixel da imagem 1 soh seja utilizado uma vez. Fora isso, talvez soh questao de eficiencia do algoritmo.
     }
 
 //#else
@@ -187,7 +192,7 @@ void createPic2(Img* img1, Img* img2, Img* img3){
     }
 }*/
 
-int distanciaPixels(const void* img1, const void* img2){
+int distanciaPixels(const void* img1, const void* img2){ //retorna distancia entre 2 cores, acredito que esta funcionando perfeitamente
     RGB* ptr1 = (RGB*) img1;
     RGB* ptr2 = (RGB*) img2;
     int r1 = ptr1->r;
