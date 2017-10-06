@@ -171,37 +171,20 @@ int main(int argc, char** argv)
         positionSecondPic[i] = i+1;
     }
 
-    int dist;
 
     for(int i = 0; i < size; i++){// itera por cada pixel da imagem
-        int position;
+        int position = 0;
+        //o problema esta dentro do for abaixo
         for(int j = 0; j < size; j++){//itera por cada pixel de pic[1], para saber qual a posicao do pixel da lista ordenada na imagem
             if(pic[1].img[j].r == pixelsSecondPic[i].r && pic[1].img[j].g == pixelsSecondPic[i].g && pic[1].img[j].b == pixelsSecondPic[i].b && positionSecondPic[position] != 0){
                 position = j;//quando achar o pixel
-                positionSecondPic[position] = 0;
+                positionSecondPic[position] = 0;//marca posicao para nao utilizar de novo
                 break;
             }
         }
         pic[2].img[i] = pixelsFirstPic[i];
     }
-    int aux;
-    /*for(int n = 0; n < 100; n++){//itera por cada pixel da imagem, para que seja atribuido um pixel por vez em pic[2]. O correto eh n < size, mas a execucao demora muito tempo, entao para testes fica melhor n < 1000
-        dist = 10000; //valor inicial da distancia, deve ser qualquer valor grande que garanta a atribuicao de valor no primeira iteracao do for abaixo
-        for(int i = 0; i < size; i++){ //encontra a cor dentro de pixelsFirstPic mais proxima de pic[1].img[n]
-            if(dist > distanciaPixels(&pixelsFirstPic[i], &pic[1].img[n])){
-                dist = distanciaPixels(&pixelsFirstPic[i], &pic[1].img[n]);
-                aux = i;
-            }
-        }
-        pic[2].img[n] = pixelsFirstPic[aux]; //atribui cor mais proxima a pic[2]
 
-
-        for(int j = aux; j < length; j++){ //remove a cor de pixelsFirstPic, nao esta funcionando, acredito que o sizeof nao seja o ideal para conseguir tamanho de vetor
-            pixelsFirstPic[j] = pixelsFirstPic[j+1];
-        }
-        length = length - 1;
-        // eh importante remover a cor de pixelFirstPic, para que o mesmo pixel de pic[0] nao seja atribuido mais de uma vez em pic[2]
-    }*/
     valida();
 //#else
     // Para valer, só aloca memória para a imagem de saída
