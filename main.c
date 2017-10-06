@@ -64,6 +64,27 @@ void load(char* name, Img* pic)
     printf("Load: %d x %d x %d\n", pic->width, pic->height, chan);
 }
 
+// Funcao de comparacao para qsort: ordena por R, G, B (desempate nessa ordem)
+int cmp(const void* elem1, const void* elem2)
+{
+    RGB* ptr1 = (RGB*) elem1;
+    RGB* ptr2 = (RGB*) elem2;
+    unsigned char r1 = ptr1->r;
+    unsigned char r2 = ptr2->r;
+    unsigned char g1 = ptr1->g;
+    unsigned char g2 = ptr2->g;
+    unsigned char b1 = ptr1->b;
+    unsigned char b2 = ptr2->b;
+    int r = 0;
+    if(r1 < r2) r = -1;
+    else if(r1 > r2) r = 1;
+    else if(g1 < g2) r = -1;
+    else if(g1 > g2) r = 1;
+    else if(b1 < b2) r = -1;
+    else if(b1 > b2) r = 1;
+    return r;
+}
+
 int main(int argc, char** argv)
 {
     if(argc < 2) {
@@ -127,24 +148,44 @@ int main(int argc, char** argv)
 //#define DEMO
 //#ifdef DEMO
 
+    load(argv[3], &pic[2]);
 
-	load(argv[3], &pic[2]);
-    //createPic2(&pic[0], &pic[1], &pic[2]);
     int size = pic[1].width*pic[1].height;
     int length = size;
-    for(int i = 0; i < size; i++){//cria pic[2] (imagem da resposta) para ser uma imagem toda vermelha, para testarmos
-       pic[2].img[i].r = 'f';
-       pic[2].img[i].b = '0';
-       pic[2].img[i].g = '0';
-    }
+
     RGB pixelsFirstPic[size];
+    RGB pixelsSecondPic[size];
 
     for(int i = 0; i < size; i++){//cria um vetor com todos os pixels da pic[0], esses pixels iram compor a pic[2]
         pixelsFirstPic[i] = pic[0].img[i];
     }
+
+    for(int i = 0; i < size; i++){//cria um vetor com todos os pixels da pic[1]
+        pixelsSecondPic[i] = pic[1].img[i];
+    }
+
+    qsort(pixelsFirstPic, size, sizeof(RGB), cmp);
+    qsort(pixelsSecondPic, size, sizeof(RGB), cmp);
+    int positionSecondPic[size];
+    for(int i = 0; i < size; i++){
+        positionSecondPic[i] = i+1;
+    }
+
     int dist;
+
+    for(int i = 0; i < size; i++){// itera por cada pixel da imagem
+        int position;
+        for(int j = 0; j < size; j++){//itera por cada pixel de pic[1], para saber qual a posicao do pixel da lista ordenada na imagem
+            if(pic[1].img[j].r == pixelsSecondPic[i].r && pic[1].img[j].g == pixelsSecondPic[i].g && pic[1].img[j].b == pixelsSecondPic[i].b && positionSecondPic[position] != 0){
+                position = j;//quando achar o pixel
+                positionSecondPic[position] = 0;
+                break;
+            }
+        }
+        pic[2].img[i] = pixelsFirstPic[i];
+    }
     int aux;
-    for(int n = 0; n < 10000; n++){//itera por cada pixel da imagem, para que seja atribuido um pixel por vez em pic[2]. O correto eh n < size, mas a execucao demora muito tempo, entao para testes fica melhor n < 1000
+    /*for(int n = 0; n < 100; n++){//itera por cada pixel da imagem, para que seja atribuido um pixel por vez em pic[2]. O correto eh n < size, mas a execucao demora muito tempo, entao para testes fica melhor n < 1000
         dist = 10000; //valor inicial da distancia, deve ser qualquer valor grande que garanta a atribuicao de valor no primeira iteracao do for abaixo
         for(int i = 0; i < size; i++){ //encontra a cor dentro de pixelsFirstPic mais proxima de pic[1].img[n]
             if(dist > distanciaPixels(&pixelsFirstPic[i], &pic[1].img[n])){
@@ -154,13 +195,14 @@ int main(int argc, char** argv)
         }
         pic[2].img[n] = pixelsFirstPic[aux]; //atribui cor mais proxima a pic[2]
 
-        length = length - 1;
+
         for(int j = aux; j < length; j++){ //remove a cor de pixelsFirstPic, nao esta funcionando, acredito que o sizeof nao seja o ideal para conseguir tamanho de vetor
             pixelsFirstPic[j] = pixelsFirstPic[j+1];
         }
+        length = length - 1;
         // eh importante remover a cor de pixelFirstPic, para que o mesmo pixel de pic[0] nao seja atribuido mais de uma vez em pic[2]
-    }
-
+    }*/
+    valida();
 //#else
     // Para valer, só aloca memória para a imagem de saída
 //	pic[2].img = malloc(pic[1].width * pic[1].height * 3); // W x H x 3 bytes (RGB)
@@ -171,6 +213,7 @@ int main(int argc, char** argv)
 
 	// Entra no loop de eventos, não retorna
     glutMainLoop();
+
     //acredito que, da forma que esta, o algoritmo ja cria uma terceira imagem muito parecida com a segunda imagem, o que falta eh fazer com que cada pixel da imagem 1 soh seja utilizado uma vez. Fora isso, talvez soh questao de eficiencia do algoritmo.
 }
 
@@ -190,26 +233,7 @@ int distanciaPixels(const void* img1, const void* img2){ //retorna distancia ent
     //printf("diferenca %i\n", sqrt(rSquare + gSquare + bSquare));
     return sqrt(rSquare + gSquare + bSquare);
 }
-// Funcao de comparacao para qsort: ordena por R, G, B (desempate nessa ordem)
-int cmp(const void* elem1, const void* elem2)
-{
-    RGB* ptr1 = (RGB*) elem1;
-    RGB* ptr2 = (RGB*) elem2;
-    unsigned char r1 = ptr1->r;
-    unsigned char r2 = ptr2->r;
-    unsigned char g1 = ptr1->g;
-    unsigned char g2 = ptr2->g;
-    unsigned char b1 = ptr1->b;
-    unsigned char b2 = ptr2->b;
-    int r = 0;
-    if(r1 < r2) r = -1;
-    else if(r1 > r2) r = 1;
-    else if(g1 < g2) r = -1;
-    else if(g1 > g2) r = 1;
-    else if(b1 < b2) r = -1;
-    else if(b1 > b2) r = 1;
-    return r;
-}
+
 
 // Verifica se o algoritmo foi aplicado corretamente:
 // Ordena os pixels da imagem origem e de saída por R, G e B;
@@ -258,8 +282,10 @@ void valida()
     // Libera memória dos arrays ordenados
     free(aux1);
     free(aux2);
-    if(ok)
+    if(ok){
         printf(">>>> TRANSFORMACAO VALIDA <<<<<\n");
+    }
+
 }
 
 // Gerencia eventos de teclado
