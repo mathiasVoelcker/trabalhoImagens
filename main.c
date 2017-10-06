@@ -182,7 +182,7 @@ int main(int argc, char** argv)
                 break;
             }
         }
-        pic[2].img[i] = pixelsFirstPic[i];
+        pic[2].img[position] = pixelsFirstPic[i];
     }
 
     valida();
